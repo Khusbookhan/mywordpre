@@ -2,13 +2,15 @@
 
 function mytheme_enqueue_styles() {
 
-wp_enqueue_script( 'recipe-js ', get_stylesheet_directory_uri() . "/js/custom.js" ,   array('jquery') );
-    wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css');
-    wp_enqueue_style( 'child-style', get_stylesheet_uri());   
-    }
+wp_enqueue_script( 'recipe-js ', get_stylesheet_directory_uri() . "/recipe.js" ,   array('jquery') );
+ wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css');
+ wp_enqueue_style( 'child-style', get_stylesheet_uri());   
+    // in JavaScript, object properties are accessed as ajax_object.ajax_url, ajax_object.we_value
+ wp_localize_script( 'recipe-js', 'recipe_obj',
+        array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
+}
 
     add_action( 'wp_enqueue_scripts', 'mytheme_enqueue_styles' );
-
 
 
 
@@ -45,7 +47,7 @@ $args = array(
 'description' => 'Displays city recipes and their ratings',
 'public' => true,
 'rewrite' => true,
- 'rewrite' => array('slug' => 'recipe'),
+'rewrite' => array('slug' => 'recipe'),
 'menu_position' => 4,
 'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt', 'comments','author' ),
 'has_archive' => true,
@@ -170,18 +172,6 @@ break;
 }
 
  }
-
-
- /**
- * Show all Portfolio CPT items on archive
- *
- */
-
-
-
-
-
-
  //////here search box coding start//////////////////////////////////
  // the ajax function
 
@@ -191,6 +181,7 @@ break;
 ======================   
 */
 // add the ajax fetch js
+// add the ajax fetch js
 add_action( 'wp_footer', 'ajax_fetch' );
 function ajax_fetch() {
 ?>
@@ -199,10 +190,10 @@ function fetch(){
 
     jQuery.ajax({
         url: '<?php echo admin_url('admin-ajax.php'); ?>',
-        type: 'get',
+        type: 'post',
         data: { action: 'data_fetch', keyword: jQuery('#keyword').val() },
         success: function(data) {
-            jQuery('#datafetch').html( data );
+            jQuery('#primary').html( data );
         }
     });
 
@@ -212,25 +203,55 @@ function fetch(){
 <?php
 }
 
+
+// add the ajax fetch js
+add_action( 'wp_footer', 'ajax_fetch' );
 // the ajax function
 add_action('wp_ajax_data_fetch', 'data_fetch');
 add_action('wp_ajax_nopriv_data_fetch','data_fetch');
 function data_fetch(){
 
-    $the_query = new WP_Query( array( 'posts_per_page' => -1, 's' => esc_attr( $_POST['keyword'] ), 'post_type' => array('recipe') ) );
-    if( $the_query->have_posts() ) :
-        echo '<ul>';
-        while( $the_query->have_posts() ): $the_query->the_post(); ?>
+    $the_query = new WP_Query( array( 'posts_per_page' => 2, 's' => esc_attr( $_POST['keyword'] ), 'post_type' => array('recipe') ) );
+    
 
-            <li><a href="<?php echo esc_url( post_permalink() ); ?>"><?php the_title();?></a></li>
+    if( $the_query->have_posts() ) :
+
+    //echo '<ul>';
+         ?>
+
+ <div class="wrapper">
+    <div class="row">
+   <div id="primarys" class="container">
+    
+    <?php
+        while( $the_query->have_posts() ): 
+
+            $the_query->the_post();
+             ?>
+
+            
+                    <b> <h1><?php the_title(); ?></h1></b>
+                    <p style="text-align:center;"><?php the_content(); ?></p>
+                    <a href="<?php the_permalink() ?>"><?php the_post_thumbnail('thumbnail');?></a>
+            <li><a href="<?php echo esc_url( post_permalink() ); ?>"><?php the_title();?></a>
+            </li>
 
         <?php endwhile;
-       echo '</ul>';
+
+        ?>
+        
+    </div>
+   </div>
+</div>
+<?php
+
+      // echo '<ul>';
         wp_reset_postdata();  
     endif;
 
     die();
 }
+
 
 
     // shortcode of data retrive
@@ -257,7 +278,7 @@ function shortcode_movie_post_type()
   
     $result = '';
     if($query->have_posts()) :
-  
+
         while($query->have_posts()) :
   
             $query->the_post();

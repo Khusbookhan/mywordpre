@@ -6,13 +6,10 @@ get_header();
 
 ?>
 <div class="search_bar">
-    <form action="/" method="get" autocomplete="off">
+    <form action="/" method="get" autocomplete="off" style="width: 300px;">
         <input type="text" name="s" placeholder="Search here" id="keyword" class="input_search" onkeyup="fetch()">
-        <button>
-            Search
-        </button>
     </form>
-    <div class="search_result" id="datafetch">
+    <div class="search_result" >
     </div>
 </div>
 <?php
@@ -22,7 +19,7 @@ $paged=get_query_var('paged')?get_query_var('paged'):1;
 ?>
 
 <div class="wrap">
-    <div id="primary" class="content_area">
+    <div id="primary" class="content_area" >
         <main id="main" class="site-main" role="main" >
             <?php
                $args = array
@@ -34,32 +31,40 @@ $paged=get_query_var('paged')?get_query_var('paged'):1;
                
             );
 
+
             $query = new WP_Query($args);//in this #3
            
-            if($query->have_posts()) :
+                
+                if($query->have_posts()) :
 
+            	?>
+          <div class="wrapper">
+             <div class="coloumn" id="datafetch">
+               <?php
                 while($query->have_posts()) :
 
+
                     $query->the_post();?>
-            <b> <h1><?php the_title(); ?></h1></b>
-                    <p style="text-align:center;"><?php the_content(); ?></p>
+                    <b> <h1><?php the_title(); ?></h1></b>
+                      <p style="text-align:center;"><?php the_content(); ?></p>
                     <a href="<?php the_permalink() ?>"><?php the_post_thumbnail('thumbnail');?></a>
                    
 
 
                     <p> <?php  $name = get_post_meta($post->ID,"wpl_actore_name",true) ?>
                     <?php echo $name ?>
-                </p>
+                    </p>
 
                
-                <p> <?php  $email = get_post_meta($post->ID,"wpl_actore_email",true) ?>
+                    <p> <?php  $email = get_post_meta($post->ID,"wpl_actore_email",true) ?>
                     <?php echo $email ?>
-                </p>
+                    </p>
            
-             <p> <?php  $number = get_post_meta($post->ID,"wpl_actore_number",true) ?>
+                    <p> <?php  $number = get_post_meta($post->ID,"wpl_actore_number",true) ?>
                     <?php echo $number ?>
-                </p>
-               
+                    </p>
+           </div>
+      </div>
             <?php
                 endwhile;    
                     //#4  Retrieves paginated links for archive post pages.    
