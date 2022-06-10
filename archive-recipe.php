@@ -5,13 +5,28 @@
 get_header();  
 
 ?>
+<!--******************************************************************************************************************************************************************************************************************************************************************************************search bar*********************************************************-->
 <div class="search_bar">
-    <form action="/" method="get" autocomplete="off" style="width: 300px;">
-        <input type="text" name="s" placeholder="Search here" id="keyword" class="input_search" onkeyup="fetch()">
+    <form action="" method="get" autocomplete="off" style="width: 300px;">
+        <input type="text" name="s" placeholder="Search here" id="keyword" class="input_search">
+
+     
+                
+     <select name="filter" id="filter" class="postform">
+                            <option selected="selected">Sort By</option>
+                            <option value="order1">ASC</option>
+                            <option value="descending">DSD</option>
+                            <option value="newer-post">Newest to Oldest</option>
+                            
+                        </select>
     </form>
-    <div class="search_result" >
+    <div class="search_result"  >
+
     </div>
 </div>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------search box ends here--------------------------------------------
+-->
+
 <?php
 //#1 url se get karega ye query or agr url se nhi milta to aap 1 set krdo
 $paged=get_query_var('paged')?get_query_var('paged'):1;
@@ -37,7 +52,7 @@ $paged=get_query_var('paged')?get_query_var('paged'):1;
                 
                 if($query->have_posts()) :
 
-            	?>
+                ?>
           <div class="wrapper">
              <div class="coloumn" id="datafetch">
                <?php

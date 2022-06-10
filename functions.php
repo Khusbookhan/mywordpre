@@ -1,18 +1,22 @@
 <?php
-
+//************************************************************************************************************************************************************************************************************************************************************************************enqueing scripts in***************************************************** 
 function mytheme_enqueue_styles() {
 
-wp_enqueue_script( 'recipe-js ', get_stylesheet_directory_uri() . "/recipe.js" ,   array('jquery') );
- wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css');
- wp_enqueue_style( 'child-style', get_stylesheet_uri());   
+wp_enqueue_script( 'recipe_js', get_stylesheet_directory_uri() . "/recipe.js" ,   array('jquery') );
+wp_localize_script( 'recipe_js', 'frontend_ajax_object',
+        array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
+wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css');
+wp_enqueue_style( 'child-style', get_stylesheet_uri());   
     // in JavaScript, object properties are accessed as ajax_object.ajax_url, ajax_object.we_value
- wp_localize_script( 'recipe-js', 'recipe_obj',
-        array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
 }
 
     add_action( 'wp_enqueue_scripts', 'mytheme_enqueue_styles' );
 
 
+
+//*********************************************************************************************************************************************************custom post type start form here***********************************************
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function my_custom_post_recipe() {
 //cutom post type
@@ -51,7 +55,7 @@ $args = array(
 'menu_position' => 4,
 'supports' => array( 'title', 'editor', 'thumbnail', 'excerpt', 'comments','author' ),
 'has_archive' => true,
-'taxonomies' => array('category')
+'taxonomies' => array('spice-book')
 );
 
 register_post_type( 'recipe', $args );
@@ -63,7 +67,7 @@ add_action( 'init', 'my_custom_post_recipe' );
 
 
 
-//adding custom metabox
+//*************************************************************************************************************************************************************************************************************************************************************************************adding custom metabox***************************************************
 function wpl_register_metabox(){
 
       add_meta_box( "cpt-id", "Actores Details", "wpl_actor_call","recipe","side","high");
@@ -99,7 +103,7 @@ function wpl_register_metabox(){
 
  }
 
-// getting data from (custom field) metabox
+//************************************************************************************************************************************************************************************************************************************************************************** getting data from (custom field) metabox******************************************
 
 
 
@@ -112,13 +116,13 @@ $TxtActoreEmail = isset($_POST['TxtActoreEmail'])?$_POST['TxtActoreEmail']:"";
 $TxtActorenumber = isset($_POST['TxtActorenumber'])?$_POST['TxtActorenumber']:"";
 
 
-update_post_meta( $post_id,"wpl_actore_name",$TxtActoreName);
-update_post_meta( $post_id,"wpl_actore_email",$TxtActoreEmail);
-   update_post_meta( $post_id,"wpl_actore_number",$TxtActorenumber);
+upoldest_post_meta( $post_id,"wpl_actore_name",$TxtActoreName);
+upoldest_post_meta( $post_id,"wpl_actore_email",$TxtActoreEmail);
+   upoldest_post_meta( $post_id,"wpl_actore_number",$TxtActorenumber);
 
  }
 
- // adding columns to post page
+ // *********************************************************************************************************************************************************************************************************************************************************************************adding columns to post page*********************************************
 
 
 
@@ -135,7 +139,7 @@ $columns = array(
 "pub_email" => "Publisher email",
 "pub_name" => "Publisher name",
 "pub_number"=>"Publisher number ",
-"date" => "date"
+"oldest" => "oldest"
 
 );
 
@@ -143,7 +147,7 @@ return $columns;
 
  }
 
-// adding data to post page from data base according to colmun name
+//************************************************************************************************************************************************************************************************************************************************************* adding data to post page from data base according to colmun name*******************************
 
 
 
@@ -172,41 +176,9 @@ break;
 }
 
  }
- //////here search box coding start//////////////////////////////////
- // the ajax function
-
-/*
- ==================
- Ajax Search
-======================   
-*/
-// add the ajax fetch js
-// add the ajax fetch js
-add_action( 'wp_footer', 'ajax_fetch' );
-function ajax_fetch() {
-?>
-<script type="text/javascript">
-function fetch(){
-
-    jQuery.ajax({
-        url: '<?php echo admin_url('admin-ajax.php'); ?>',
-        type: 'post',
-        data: { action: 'data_fetch', keyword: jQuery('#keyword').val() },
-        success: function(data) {
-            jQuery('#primary').html( data );
-        }
-    });
-
-}
-</script>
-
-<?php
-}
-
-
-// add the ajax fetch js
-add_action( 'wp_footer', 'ajax_fetch' );
-// the ajax function
+ ////////////////////////////////////////////here search box coding start//////////////////////////////////
+ //*****************************************************************************************************************
+ //*****************************************************************************************************************
 add_action('wp_ajax_data_fetch', 'data_fetch');
 add_action('wp_ajax_nopriv_data_fetch','data_fetch');
 function data_fetch(){
@@ -254,15 +226,12 @@ function data_fetch(){
 
 
 
-    // shortcode of data retrive
- // shortcode of data retrive
-
  //function demo(){
      //echo "Hi! im maryam";
  //}
 // add_shortcode('myshort','demo');
 // shortcode code ends here*/
-// >> Create Shortcode to Display Movies Post Types
+// >>****************************************************************************************************************************************************************************************************************************************************************************** Create Shortcode to Display Movies Post Types******************************
   
 function shortcode_movie_post_type()
 {
@@ -301,6 +270,49 @@ function shortcode_movie_post_type()
     add_shortcode( 'recipe-list', 'shortcode_movie_post_type' ); 
   
 // shortcode code ends here
-  
-// shortcode code ends here
+  ?>
 
+<!-------------------------------------********************************************************************************************************************************************************************************************************************************************************sorting ajax php ******************************************************************************************************-->
+
+
+
+
+
+<?php
+    /**
+ * Add custom taxonomies
+ *
+ * Additional custom taxonomies can be defined here
+ * 
+ */
+function add_custom_taxonomies() {
+  // Add new "recipes" taxonomy to Posts
+  register_taxonomy('recipe-book', 'recipe', array(
+    // Hierarchical taxonomy (like categories)
+    'hierarchical' => true,
+    // This array of options controls the labels displayed in the WordPress Admin UI
+    'labels' => array(
+      'name' => _x( 'recipe-book', 'Spices' ),
+      'singular_name' => _x( 'recipe', 'spice-book' ),
+      'search_items' =>  __( 'Search recipes' ),
+      'all_items' => __( 'All recipes' ),
+      'parent_item' => __( 'Parent recipe' ),
+      'parent_item_colon' => __( 'Parent recipe:' ),
+      'edit_item' => __( 'Edit recipe' ),
+      'upoldest_item' => __( 'Upoldest recipe' ),
+      'add_new_item' => __( 'Add New recipe' ),
+      'new_item_name' => __( 'New recipe Name' ),
+      'menu_name' => __( 'Recipe-Book' ),
+    ),
+    // Control the slugs used for this taxonomy
+    'rewrite' => array(
+      'slug' => 'slug', // This controls the base slug that will display before each term
+      'with_front' => false, // Don't display the category base before "/recipes/"
+      'hierarchical' => true // This will allow URL's like "/recipes/boston/cambridge/"
+    ),
+  ));
+}
+   add_action( 'init', 'add_custom_taxonomies', 0 );
+//*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+?>
+<!---********************************************************************************************************************************************************************************************************************************************************************************** Drop down in ****************************************************************************************************************---->
