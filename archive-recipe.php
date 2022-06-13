@@ -12,15 +12,16 @@ get_header();
 
      
                 
-     <select name="filter" id="filter" class="postform">
-                            <option selected="selected">Sort By</option>
-                            <option value="order1">ASC</option>
-                            <option value="descending">DSD</option>
-                            <option value="newer-post">Newest to Oldest</option>
-                            
-                        </select>
+    <select id="selection">
+    <option value="null"></option>
+    <option value="asc">Ascending Order</option>
+    <option value="desc">Decending Order</option>
+    <option value="old">Oldest</option>
+    <option value="new" >Newest</option>
+    </select>
+
     </form>
-    <div class="search_result"  >
+<div class="search_result"  >
 
     </div>
 </div>

@@ -316,3 +316,84 @@ function add_custom_taxonomies() {
 //*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 ?>
 <!---********************************************************************************************************************************************************************************************************************************************************************************** Drop down in ****************************************************************************************************************---->
+ <?php
+add_action('wp_ajax_filter', 'filter');
+add_action('wp_ajax_nopriv_filter','filter');
+
+function filter()
+
+
+{         
+    global $post, $wp_query;
+        
+     $args = array( 
+        'post_status' => 'publish',
+        'orderby' => 'title',
+        'order' => 'DESC',
+        'posts_per_page' => '3',
+        'post_type' => array('recipe') );
+
+        if($_POST["keyword"] == "null") 
+        {
+            $args['orderby'] = 'date';
+            $args['order'] = 'ASC';
+        } 
+        if($_POST["keyword"] == "asc") 
+        {
+            $args['order'] = 'ASC';
+        } 
+        if($_POST["keyword"] == "desc") 
+        {
+            $args['order'] = 'DESC';
+        }  
+        if($_POST["keyword"] == "old") 
+        {
+            $args['orderby'] = 'date';
+            $args['order'] = 'ASC';
+        }
+        if($_POST["keyword"] == "new") 
+        {
+            $args['orderby'] = 'date';
+            $args['order'] = 'DESC';
+        } 
+
+    $the_query = new WP_Query( $args );
+    if( $the_query->have_posts() ) :
+        ob_start();
+        while( $the_query->have_posts() ): $the_query->the_post();  ?>
+        
+      
+                    <b> <h1><?php the_title(); ?></h1></b>
+                      <p style="text-align:center;"><?php the_content(); ?></p>
+                    <a href="<?php the_permalink() ?>"><?php the_post_thumbnail('thumbnail');?></a>
+                   
+
+
+                    <p> <?php  $name = get_post_meta($post->ID,"wpl_actore_name",true) ?>
+                    <?php echo $name ?>
+                    </p>
+
+               
+                    <p> <?php  $email = get_post_meta($post->ID,"wpl_actore_email",true) ?>
+                    <?php echo $email ?>
+                    </p>
+           
+                    <p> <?php  $number = get_post_meta($post->ID,"wpl_actore_number",true) ?>
+                    <?php echo $number ?>
+                    </p>
+    <?php  
+        endwhile; 
+
+        $output_string = ob_get_contents();
+        ob_end_clean();
+        wp_die($output_string); 
+        wp_reset_postdata(); 
+
+    endif;
+    die();
+
+
+
+}
+
+

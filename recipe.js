@@ -24,29 +24,25 @@ jQuery(document).ready(function($){
     
     });
     
-     $("select").change(function(){
-
-       $("#filter").on("change",function(){
-   // console.log( frontend_ajax_object.ajaxurl)
-        var fetch = $(this).val();
-     jQuery.ajax({
+    $("#selection").change(function(){
+        var keyword = $(this).find("option:selected").text();
+        var keyword = $(this).val();
+        jQuery.ajax({
             url:   frontend_ajax_object.ajaxurl,
-            type: 'post',
-            data:  { 
-            action: 'filter',  
-            keyword: fetch
+            type: 'POST',
+            data: { 
+                action: 'filter',  
+                keyword: keyword 
             },
-            success:function(data) {
-                console.log(data)
-                 jQuery('#primary').html( data );
-    
+            success: function(data) {
+                jQuery('#primary').html( data );
             }
         });
-    
+    });
     
       
     
-    });
+    
   });
     
-    });
+    
